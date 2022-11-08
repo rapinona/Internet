@@ -6,14 +6,36 @@
 //
 
 import UIKit
+import Network
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var internetStatus = false
+    var internetType = ""
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let monitor = NWPathMonitor()
+        //closure : bloque de còdigo que se ejecuta de manera asincrona
+        monitor.pathUpdateHandler = { path in
+            //path es un argumento que llega a la funcion
+            if path.status != .satisfied{
+                self.internetStatus = false
+                print("Sin servicio")
+            }else{
+                self.internetStatus = true
+                if path.usesInterfaceType(.wifi){
+                    self.internetType = "WIF"
+                }else{
+                    self.internetType = "Datos"
+                }
+                print("conectado")
+            }
+        }
+        monitor.start(queue: DispatchQueue.global())
+        
         return true
     }
 
